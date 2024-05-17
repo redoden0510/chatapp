@@ -1,1 +1,40 @@
-friend
+{% extends 'base.html' %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    {% block extra_style %}
+    <title>フレンドリスト</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% endblock extra_style %}
+    <!-- <link rel="stylesheet" href="{% static 'myapp/css/friends.css' %}"> -->
+</head>
+<body>
+    {% block header %}
+    <h1>フレンドリスト</h1>
+    {% endblock header%}
+
+    {% block content%}
+    {% if friends %}
+        {% for friend in friends %}
+            <div class="friend-box">
+                <a href="{% url 'talk_room' friend.id %}">
+                    {{friend.username}}</a>
+                <img class = "img" src="{{ friend.user.icon }}" alt="{{ friend.user.username }} icon"> 
+                {% if friend.user.latest_chat %}
+                    <div class="latest_text">{{ friend.user.latest_chat.text }}</div>
+                    <div class="latest_time">{{ friend.user.latest_chat.timestamp }}</div>
+                {% else %}
+                    <div>No recent chat</div>
+                {% endif %}
+               
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No friends yet.</p>
+    {% endif %}
+    {% endblock content %}
+</body>
+</html>

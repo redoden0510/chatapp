@@ -79,3 +79,19 @@ body{
     font-size: 0.8rem;
     color: #000;
 }
+
+.c_un {
+    display: inline-block;
+    padding: 5px 30px;
+    font-size: 30px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    border: 1px solid #000;
+    border-radius: 100px;
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+}

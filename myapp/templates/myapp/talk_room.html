@@ -1,1 +1,41 @@
-TR
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>トークルーム</title>
+</head>
+<body>
+    <header>
+        <div>
+            <a href="{% url 'friends' %}">
+                <button>戻る</button>
+            </a>
+        </div>
+        <div>
+            <button onclick="location.reload()">更新</button>
+        </div>
+    </header>
+    <main>
+        <div id="message-container">
+            {% for message in messages %}
+                <div>
+                    <span>{{ message.sender.username }}</span>
+                    <span>{{ message.timestamp }}</span>
+                </div>
+                <div>
+                    <p>{{ message.content }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </main>
+    <footer>
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">送信</button>
+        </form>
+    </footer>
+    
+</body>
+</html>
