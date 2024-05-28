@@ -3,13 +3,14 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from .forms import CustomUserCreationForm, LoginForm, MessageForm
 from django.views.generic import CreateView, ListView, TemplateView
-from .models import CustomUser, Friends, Message, User
+from .models import CustomUser, Message, User
 from django.contrib.auth.views import LoginView, PasswordChangeView, LogoutView
 from django.contrib.auth import authenticate, login, get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import FormView
 from django.http import HttpResponseRedirect
 from django.views.generic.edit import UpdateView
+from django.db.models import Q
 
 
 def index(request):
@@ -21,82 +22,104 @@ class SignUp(CreateView):
     success_url = reverse_lazy('index')  # ユーザーが登録後にリダイレクトされるURL
     template_name = 'myapp/signup.html'  # ユーザー登録フォームを含むテンプレート
 
-class Login(LoginView):
-    form = LoginForm
-    template_name = "myapp/login.html"
-    success_url = 'friends'
+# class Login(LoginView):
+#     form = LoginForm
+#     template_name = "myapp/login.html"
+#     success_url = 'friends'
     
-    def form_valid(self, form):
-        # ログインフォームのデータを取得
-        username = form.cleaned_data.get('username')
-        password = form.cleaned_data.get('password')
+#     def form_valid(self, form):
+#         # ログインフォームのデータを取得
+#         username = form.cleaned_data.get('username')
+#         password = form.cleaned_data.get('password')
 
-        # ユーザーを認証
-        user = authenticate(username=username, password=password)
+#         # ユーザーを認証
+#         user = authenticate(username=username, password=password)
 
-        if user is not None:
-            # ユーザーが存在する場合、ログインする
-            login(self.request, user)
+#         if user is not None:
+#             # ユーザーが存在する場合、ログインする
+#             login(self.request, user)
 
-            # UserProfileが存在しない場合、作成する
-            if not Friends.objects.filter(user=user).exists():
-                Friends.objects.create(user=user)
+#             # UserProfileが存在しない場合、作成する
+#             # if not CustomUser.objects.filter(user=user).exists():
+#             #     CustomUser.objects.create(user=user)
 
-        return redirect(self.success_url)
+#         return redirect(self.success_url)
 
 class Friend(LoginRequiredMixin, ListView):
-    model = Friends
     template_name = 'myapp/friends.html'
-    context_object_name = 'friends'
-    # paginate_by = 4
-    # friend=CustomUser.objects.exclude(id=self.request.user.id)
-    # friend_ids = [user.id for user in friend]
+    context_object_name = 'users'
+    model = CustomUser
     
-    def get_queryset(self):
-        friend=Friends.objects.exclude(id=self.request.user.id)
-        return friend
+    # def get_queryset(self):
+    #     user=CustomUser.objects.exclude(id=self.request.user.id)
+    #     return user
     
-    def get_friend_ids(self, friend):
-        friend_ids = [user.id for user in friend]
-        print(friend_ids)
-        return friend_ids
-    
-    
-class Talk(ListView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # friend_id = self.kwargs['id']  # URLのパラメータからfriend_idを取得
+        # friend = get_object_or_404(CustomUser, id=friend_id)  # CustomUserインスタンスを取得
+        friends=CustomUser.objects.exclude(id=self.request.user.id)
+        context['users'] = friends
+        
+        # print(Message.objects.filter(sender=CustomUser.objects.exclude(id=self.request.user.id)))
+ 
+        latest_chat = Message.objects.filter(
+            Q(sender=self.request.user) | 
+            Q(recipient=self.request.user)
+            ).order_by('-timestamp').last
+        context['latest_chat'] = latest_chat
+        print(latest_chat)
+        
+        # latest_chat = latest_chat = Message.objects.filter(
+        #     Q(sender=self.request.user) & Q(recipient=friends) | 
+        #     Q(sender=friends) & Q(recipient=self.request.user)
+        #     ).order_by('-timestamp').last
+        # context['latest_chat'] = latest_chat
+        # context['friend'] = friend
+        
+        
+        # latest_chat = Message.objects.filter(
+        #     Q(sender=self.request.user) & Q(recipient=friend) | 
+        #     Q(sender=friend) & Q(recipient=self.request.user)
+        #     ).order_by('-timestamp').last
+        # context['latest_chat'] = latest_chat
+        return context
+
+class Talk(FormView):
     form_class = MessageForm
     template_name = 'myapp/talk_room.html'
-    model = Message, Friends
-    success_url = reverse_lazy('talk_room/<int:friend_id>/')
+    model = CustomUser
+
+    def get_success_url(self) -> str:
+        return reverse("talk_room",kwargs={"pk":self.kwargs["pk"]})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # friend_id = self.friend.id
-        # トークルームの友人を取得
-        friend = get_object_or_404(Friends, pk=self.kwargs['user_id'])
+        friend_id = self.kwargs['pk']  # URLのパラメータからfriend_idを取得
+        friend = get_object_or_404(CustomUser, id=friend_id)  # CustomUserインスタンスを取得
         context['friend'] = friend
-        
-        messages = Message.objects.filter(sender=self.request.user, recipient=self.friend.user).order_by('-timestamp')[:10]
+        messages = Message.objects.filter(
+            Q(sender=self.request.user) & Q(recipient=friend) | 
+            Q(sender=friend) & Q(recipient=self.request.user)
+            ).order_by('-timestamp')[:10]
         context['messages'] = messages
         return context
     
-    
     def form_valid(self, form):
-        friend_id = self.friend.user.id
-        # 受信者を取得するために、ログインしているユーザーの友人の中から選択されたユーザーを取得
-        self.friend = get_object_or_404(Friends,pk=self.kwargs['friend_id'], user=self.request.user)
-         # メッセージの送信者はログインしているユーザー
+        friend_id = self.kwargs['pk']
+        friend = get_object_or_404(CustomUser, id=friend_id)
         sender = self.request.user
-        recipient = self.friend.user
+        recipient = friend
+        content=form.cleaned_data['content']
 
         # メッセージを作成して保存
         Message.objects.create(
         sender=sender,
         recipient=recipient,
-        content=form.cleaned_data['content']
+        content=content
         )
+        return redirect(self.get_success_url())
 
-        return HttpResponseRedirect(reverse('talk_room/<int:friend_id>/'), args=[friend_id]), sender
-        
 def setting(request):
     context = {
         'pk': request.user.pk,

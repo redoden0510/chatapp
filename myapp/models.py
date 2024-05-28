@@ -6,16 +6,11 @@ from django.contrib.auth.models import User
 
 class CustomUser(AbstractUser):
     icon = models.ImageField(null=False, blank=False, upload_to="media") 
-
+    friends = models.ManyToManyField('self', blank=True)
+    id = id
     def __str__(self):
         return self.email
 
-class Friends(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    friends = models.ManyToManyField('self', blank=True)
-    
-    def __str__(self):
-        return self.user.username
 
 class Message(models.Model):
     sender = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='sent_messages', on_delete=models.CASCADE)

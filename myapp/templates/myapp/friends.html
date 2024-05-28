@@ -17,15 +17,14 @@
     {% endblock header%}
 
     {% block content%}
-    {% if friends %}
-        {% for friend in friends %}
+    {% if users %}
+        {% for user in users %}
             <div class="friend-box">
-                <a href="{% url 'talk_room' friend.id %}">
-                    {{friend.username}}</a>
-                <img class = "img" src="{{ friend.user.icon }}" alt="{{ friend.user.username }} icon"> 
-                {% if friend.user.latest_chat %}
-                    <div class="latest_text">{{ friend.user.latest_chat.text }}</div>
-                    <div class="latest_time">{{ friend.user.latest_chat.timestamp }}</div>
+                <a href="{% url 'talk_room' user.id %}">{{user.username}}</a>
+                <img class = "img" src="{{ user.icon }}" alt="{{ user.username }} icon"> 
+                {% if user.latest_chat %}
+                    <div class="latest_text">{{ latest_chat }}</div>
+                    <div class="latest_time">{{ user.latest_chat.timestamp }}</div>
                 {% else %}
                     <div>No recent chat</div>
                 {% endif %}

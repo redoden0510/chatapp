@@ -1,11 +1,18 @@
 from django.urls import path
 from . import views
-
+from django.conf import settings
+from django.conf.urls.static import static
+from django.contrib.auth.views import LoginView
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     path('', views.index, name='index'),
     path('signup', views.SignUp.as_view(), name='signup'),
-    path('login', views.Login.as_view(), name='login'),
+    path('login',
+        LoginView.as_view(
+            template_name='myapp/login.html'
+        ),
+        name='login'),
     path('friends', views.Friend.as_view(), name='friends'),
     path('talk_room/<int:pk>', views.Talk.as_view(), name='talk_room'),
     path('setting', views.setting, name='setting'),
@@ -14,4 +21,6 @@ urlpatterns = [
     path('icon_change/<int:pk>', views.c_ic.as_view(), name='c_ic'),
     path('password_change/<int:pk>', views.c_pw.as_view(), name='c_pw'),
     path('logout', views.logout.as_view(), name='logout'),
-]
+] 
+
+# urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
