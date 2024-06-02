@@ -7,9 +7,8 @@ from django.contrib.auth.models import User
 class CustomUser(AbstractUser):
     icon = models.ImageField(null=False, blank=False, upload_to="media") 
     friends = models.ManyToManyField('self', blank=True)
-    id = id
     def __str__(self):
-        return self.email
+        return self.username
 
 
 class Message(models.Model):

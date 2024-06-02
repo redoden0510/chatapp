@@ -13,8 +13,9 @@ img {
 
 .friend-box {
     width: 300px;
-    margin: 30px auto;
+    margin: 1px auto; /* マージンを小さくして余白を減らす */
     border-bottom: solid 1px #000;
+    padding: 5px; /* 内部のパディングを調整 */
 }
 
 .name {
@@ -26,4 +27,43 @@ img {
 .latest_text {
     font-size: 14px;
     color: #777;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+    list-style: none;
+}
+
+.pagination .page-item {
+    margin: 0 5px;
+}
+
+.pagination .page-link {
+    display: block;
+    padding: 8px 12px;
+    color: #007bff;
+    text-decoration: none;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.pagination .page-link:hover {
+    background-color: #f8f9fa;
+    color: #0056b3;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    pointer-events: none;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
 }

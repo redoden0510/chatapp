@@ -11,6 +11,7 @@ from django.views.generic.edit import FormView
 from django.http import HttpResponseRedirect
 from django.views.generic.edit import UpdateView
 from django.db.models import Q
+from django.core.paginator import Paginator
 
 
 def index(request):
@@ -22,67 +23,41 @@ class SignUp(CreateView):
     success_url = reverse_lazy('index')  # ユーザーが登録後にリダイレクトされるURL
     template_name = 'myapp/signup.html'  # ユーザー登録フォームを含むテンプレート
 
-# class Login(LoginView):
-#     form = LoginForm
-#     template_name = "myapp/login.html"
-#     success_url = 'friends'
-    
-#     def form_valid(self, form):
-#         # ログインフォームのデータを取得
-#         username = form.cleaned_data.get('username')
-#         password = form.cleaned_data.get('password')
-
-#         # ユーザーを認証
-#         user = authenticate(username=username, password=password)
-
-#         if user is not None:
-#             # ユーザーが存在する場合、ログインする
-#             login(self.request, user)
-
-#             # UserProfileが存在しない場合、作成する
-#             # if not CustomUser.objects.filter(user=user).exists():
-#             #     CustomUser.objects.create(user=user)
-
-#         return redirect(self.success_url)
-
 class Friend(LoginRequiredMixin, ListView):
     template_name = 'myapp/friends.html'
     context_object_name = 'users'
     model = CustomUser
-    
-    # def get_queryset(self):
-    #     user=CustomUser.objects.exclude(id=self.request.user.id)
-    #     return user
-    
+    paginate_by = 6
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # friend_id = self.kwargs['id']  # URLのパラメータからfriend_idを取得
-        # friend = get_object_or_404(CustomUser, id=friend_id)  # CustomUserインスタンスを取得
-        friends=CustomUser.objects.exclude(id=self.request.user.id)
-        context['users'] = friends
+        friends = CustomUser.objects.exclude(id=self.request.user.id)
         
-        # print(Message.objects.filter(sender=CustomUser.objects.exclude(id=self.request.user.id)))
- 
-        latest_chat = Message.objects.filter(
-            Q(sender=self.request.user) | 
-            Q(recipient=self.request.user)
-            ).order_by('-timestamp').last
-        context['latest_chat'] = latest_chat
-        print(latest_chat)
+        latest_chats = []
+        no_chat_friends = []
+        for friend in friends:
+            latest_chat = Message.objects.filter(
+                Q(sender=self.request.user, recipient=friend) | 
+                Q(sender=friend, recipient=self.request.user)
+            ).order_by('-timestamp').first()
+            if latest_chat:
+                latest_chats.append((friend, latest_chat))
+            else:
+                no_chat_friends.append(friend)
         
-        # latest_chat = latest_chat = Message.objects.filter(
-        #     Q(sender=self.request.user) & Q(recipient=friends) | 
-        #     Q(sender=friends) & Q(recipient=self.request.user)
-        #     ).order_by('-timestamp').last
-        # context['latest_chat'] = latest_chat
-        # context['friend'] = friend
+        # 最新メッセージの送信日時でソート（降順）
+        latest_chats.sort(key=lambda x: x[1].timestamp if x[1] else None, reverse=True)
         
+        for friend in no_chat_friends:
+            latest_chats.append((friend, None))
         
-        # latest_chat = Message.objects.filter(
-        #     Q(sender=self.request.user) & Q(recipient=friend) | 
-        #     Q(sender=friend) & Q(recipient=self.request.user)
-        #     ).order_by('-timestamp').last
-        # context['latest_chat'] = latest_chat
+        paginator = Paginator(latest_chats, self.paginate_by)
+        page_number = self.request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        
+        context['latest_chats'] = page_obj.object_list
+        context['is_paginated'] = page_obj.has_other_pages()
+        context['page_obj'] = page_obj
         return context
 
 class Talk(FormView):
@@ -101,7 +76,7 @@ class Talk(FormView):
         messages = Message.objects.filter(
             Q(sender=self.request.user) & Q(recipient=friend) | 
             Q(sender=friend) & Q(recipient=self.request.user)
-            ).order_by('-timestamp')[:10]
+            ).order_by('timestamp')
         context['messages'] = messages
         return context
     
@@ -131,6 +106,7 @@ class c_un(UpdateView):
     fields = ['username']
     template_name = 'myapp/c_un.html'
     success_url = reverse_lazy('setting')
+    
 
 class c_ma(UpdateView):
     model = CustomUser

@@ -37,6 +37,7 @@ body{
 .footer{
     width: 100vw;
     height: 64px;
+    
 }
 .footer-container{
     display: flex;
@@ -46,6 +47,8 @@ body{
     height: 64px;
     text-align: center;
     border-top: solid 1px #9b9b9b;
+    z-index: 10;
+    background-color: white;
 }
 .footer-container__item{
     display: flex;
