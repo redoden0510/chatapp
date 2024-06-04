@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF_8">
+    <meta name="viewport" content="width=device_width, initial_scale=1.0">
+    {% block extra_style %}
+    <link rel="stylesheet" href="static/myapp/css/c_un.css">
+    <title>ユーザーネーム変更</title>
+    {% endblock %}
+</head>
+<body>
+    {% block header %}
+    <h1>ユーザーネーム変更</h1>
+    {% endblock header %}
+    
+    {% block content %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="更新">
+    </form>
+
+    {% endblock content%}
+</body>
+</html>

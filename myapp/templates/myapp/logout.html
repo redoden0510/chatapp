@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF_8">
+    <meta name="viewport" content="width=device_width, initial_scale=1.0">
+    {% block extra_style %}
+    <link rel="stylesheet" href="static/myapp/css/c_un.css">
+    <title>ログアウト</title>
+    {% endblock %}
+</head>
+<body>
+    {% block header %}
+    <h1>ログアウト</h1>
+    {% endblock header %}
+    
+    {% block content %}
+    <body>
+        <h1>ログアウトしました。</h1>
+        <p><a href="{% url 'index' %}">ログイン画面へ戻る</a></p>
+    </body>
+
+    {% endblock content%}
+</body>
+</html> 
+<!-- 
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/myapp/css/c_un.css">
+    <title>ログアウト</title>
+</head>
+<body>
+    <header>
+        <h1>ログアウト</h1>
+    </header>
+    <body>
+        <h1>ログアウトしました。</h1>
+        <p><a href="{% url 'index' %}">ログイン画面へ戻る</a></p>
+    </body>
+</body>
+</html> -->

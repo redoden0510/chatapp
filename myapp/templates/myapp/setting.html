@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF_8">
+    <meta name="viewport" content="width=device_width, initial_scale=1.0">
+    {% block extra_style %}
+    <link rel="stylesheet" href="static/myapp/css/setting.css">
+    <title>設定</title>
+    {% endblock %}
+</head>
+<body>
+    {% block header %}
+    <h1>設定</h1>
+    {% endblock header %}
+    
+    {% block content %}
+    <div class="c_un">
+        <a href="{% url 'c_un' pk %}">ユーザー名変更</a>
+    </div>
+
+    <div class="c_ma">
+        <a href="{% url 'c_ma' pk %}">メールアドレス変更</a>
+    </div>
+
+    <div class="c_ic">
+        <a href="{% url 'c_ic' pk %}">アイコン変更</a>
+    </div>
+   
+
+    <div class="c_pw">
+        <a href="{% url 'c_pw' pk %}">パスワード変更</a>
+    </div>
+
+    <form method='post' action="{% url 'logout' %}">
+        {% csrf_token %}
+        <input type="submit" value="ログアウト">
+    </form>
+    {% endblock content%}
+</body>
+</html>

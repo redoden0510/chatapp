@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/myapp/css/talk_room.css">
+    <title>トークルーム</title>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <a href="{% url 'friends' %}">
+                <button class="back-button"><</button>
+            </a>
+        </div>
+        <div class="header-center">
+            <span>{{ friend.username }}</span>
+        </div>
+        <div class="header-right">
+            <button class="refresh-button" onclick="location.reload()">更新</button>
+        </div>
+    </header>
+    <main>
+        <div id="message-container">
+            {% for message in messages %}
+                <div class="message {% if message.sender == request.user %}own-message{% else %}other-message{% endif %}">
+                    {% if message.sender != request.user %}
+                        <img class="sender-icon" src="{{ message.sender.icon.url }}" alt="Sender Icon">
+                    {% endif %}
+                    <div class="message-content-wrapper">
+                        <div class="message-header">
+                            <span class="message-sender">{{ message.sender.username }}</span>
+                            <span class="message-timestamp">{{ message.timestamp }}</span>
+                        </div>
+                        <div class="message-content">
+                            <p>{{ message.content }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </main>
+    <footer>
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="input-group">
+                {{ form.content }}
+                <button type="submit" class="send-button">送信</button>
+            </div>
+        </form>
+    </footer>
+</body>
+</html>
