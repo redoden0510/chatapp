@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+# from django.http import HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from .forms import CustomUserCreationForm, LoginForm, MessageForm
@@ -8,7 +8,7 @@ from django.contrib.auth.views import LoginView, PasswordChangeView, LogoutView
 from django.contrib.auth import authenticate, login, get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import FormView
-from django.http import HttpResponseRedirect
+# from django.http import HttpResponseRedirect
 from django.views.generic.edit import UpdateView
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -32,6 +32,10 @@ class Friend(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         friends = CustomUser.objects.exclude(id=self.request.user.id)
+        query = self.request.GET.get('query', '')
+        
+        if query:
+            friends = friends.filter(username__icontains=query)
         
         latest_chats = []
         no_chat_friends = []
@@ -58,7 +62,13 @@ class Friend(LoginRequiredMixin, ListView):
         context['latest_chats'] = page_obj.object_list
         context['is_paginated'] = page_obj.has_other_pages()
         context['page_obj'] = page_obj
+        context['query'] = query
+        
+        if not latest_chats:
+            context['no_friends_message'] = "該当するフレンドが存在しません"
+
         return context
+    
 
 class Talk(FormView):
     form_class = MessageForm

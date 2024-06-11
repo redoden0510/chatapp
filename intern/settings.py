@@ -40,7 +40,46 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'myapp',
+    
+    'django.contrib.sites',    
+    'allauth',                 
+    'allauth.account',         
+    'allauth.socialaccount', 
 ]
+
+# django.contrib.sites用のサイト識別IDを設定
+SITE_ID = 1
+
+# 認証バックエンドの設定
+AUTHENTICATION_BACKENDS = (
+    'allauth.account.auth_backends.AuthenticationBackend',   # 一般ユーザー用（メールアドレス認証）
+    'django.contrib.auth.backends.ModelBackend',    # 管理サイト用（ユーザー名認証）
+)
+
+# 認証方式を「メールアドレス」に設定
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_USERNAME_REQUIRED = False    # ユーザー名は使用しない
+
+# サインアップにメールアドレス確認を挟むように設定
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_REQUIRED = True
+
+LOGIN_REDIRECT_URL = 'chatapp:index'
+ACCOUNT_LOGOUT_REDIRECT_URL = 'login'
+
+# 「ログアウト」を一回クリックしただけでログアウトできるように設定
+ACCOUNT_LOGOUT_ON_GET = True
+
+# django-allauthが送信するメールの件名に自動付与される接頭辞を空にする設定
+ACCOUNT_EMAIL_SUBJECT_PREFIX = ''
+
+DEFAULT_FROM_EMAIL = os.environ.get('FROM_EMAIL')
+
+#コンソール上にユーザ登録確認メールを表示。ローカルで確認するため
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -50,6 +89,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'intern.urls'
@@ -76,10 +116,15 @@ WSGI_APPLICATION = 'intern.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'database',
+        'USER': 'redoden0510',
+        'PASSWORD': 'redoden0510',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
@@ -142,3 +187,21 @@ if os.path.isfile('.env'): # .envファイルが存在しない時にもエラ�
 
     DEBUG = env('DEBUG')
     ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
+    
+    
+    LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}

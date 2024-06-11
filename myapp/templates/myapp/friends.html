@@ -16,6 +16,10 @@
     <h1>フレンドリスト</h1>
     {% endblock%}
     {% block content %}
+    <form class="search" action="" method="get">
+        <input name="query" value="{{ request.GET.query }}" type="text" />
+        <button type="submit">検索</button>
+    </form>
     {% if latest_chats %}
         {% for user, chat in latest_chats %}
             <div class="friend-box">
@@ -31,7 +35,7 @@
             </div>
         {% endfor %}
     {% else %}
-        <p>No friends yet.</p>
+        <p class="no_friends_message" >{{ no_friends_message }}</p>
     {% endif %}
 
     {% if is_paginated %}

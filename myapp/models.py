@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 # Create your models here.
 
 class CustomUser(AbstractUser):
-    icon = models.ImageField(null=False, blank=False, upload_to="media") 
+    icon = models.ImageField(null=False, blank=False, upload_to="media", default="media/default.jpg") 
     friends = models.ManyToManyField('self', blank=True)
     def __str__(self):
         return self.username
