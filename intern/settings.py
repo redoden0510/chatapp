@@ -97,7 +97,7 @@ ROOT_URLCONF = 'intern.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates', 'allauth')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -120,10 +120,10 @@ WSGI_APPLICATION = 'intern.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'database',
-        'USER': 'redoden0510',
+        'NAME': 'postgres',
+        'USER': 'postgres',
         'PASSWORD': 'redoden0510',
-        'HOST': 'localhost',
+        'HOST': 'database-1.cxagaao49eai.ap-northeast-1.rds.amazonaws.com',
         'PORT': '5432',
     }
 }
@@ -204,4 +204,9 @@ if os.path.isfile('.env'): # .envファイルが存在しない時にもエラ�
             'level': 'DEBUG',
         },
     },
+}
+
+# settings.py
+ACCOUNT_FORMS = {
+    'login': 'myapp.forms.CustomLoginForm',
 }
