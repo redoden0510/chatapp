@@ -43,9 +43,11 @@
             </form>
         </form> -->
         
-        <form method="post">
+        {% comment %} <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
+        {{ form.as_p }} {% endcomment %}
+
+        {% block active_login %}active{%endblock%}
         <button type="submit">ログイン</button>
         <p><a class="button" href="{% url 'account_reset_password' %}">パスワードをお忘れですか？</a></p>
         <p><a class="button" href="{% url 'index' %}">トップページへ</a></p>
