@@ -1,10 +1,10 @@
 # from django.http import HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse_lazy, reverse
-from .forms import CustomUserCreationForm, LoginForm, MessageForm
+from .forms import CustomUserCreationForm, CustomLoginForm, MessageForm
 from django.views.generic import CreateView, ListView, TemplateView
 from .models import CustomUser, Message, User
-from django.contrib.auth.views import LoginView, PasswordChangeView, LogoutView
+from django.contrib.auth.views import PasswordChangeView, LogoutView
 from django.contrib.auth import authenticate, login, get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import FormView
@@ -12,16 +12,11 @@ from django.views.generic.edit import FormView
 from django.views.generic.edit import UpdateView
 from django.db.models import Q
 from django.core.paginator import Paginator
+from allauth.account.views import LoginView
 
 
 def index(request):
     return render(request, "myapp/index.html")
-
-class SignUp(CreateView):
-    form_class = CustomUserCreationForm
-    model= CustomUser
-    success_url = reverse_lazy('index')  # ユーザーが登録後にリダイレクトされるURL
-    template_name = 'myapp/signup.html'  # ユーザー登録フォームを含むテンプレート
 
 class Friend(LoginRequiredMixin, ListView):
     template_name = 'myapp/friends.html'

@@ -1,0 +1,59 @@
+{% load i18n %}
+{% load allauth account %}
+
+<head>
+    <meta charset="UTF_8">
+    <meta name="viewport" content="width=device_width, initial_scale=1.0">
+    {% block extra_style %}
+    <link rel="stylesheet" href="static/myapp/css/signup.css">
+    <title>会員登録</title>
+    {% endblock %}
+</head>
+
+{% block content %}
+{% if form.errors  %}
+<div class="sign-error-message">
+    <span>会員登録に失敗しました。</span>
+</div>
+{% endif %}
+<!-- ヘッダー -->
+    <h1>会員登録</h1>
+        <form method="post" action="{% url 'account_signup' %}", enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div>
+                <label for="id_username">ユーザーネーム</label>
+                {{ form.user_name }}
+                {{ form.user_name.errors }}
+            </div>
+
+            <div>
+                <label for="id_email">メールアドレス</label>
+                {{ form.email }}
+                {{ form.email.errors }}
+            </div>
+
+            <div>
+                <label for="id_password1">パスワード</label>
+                {{ form.password1 }}
+                {{ form.password1.errors }}
+            </div>
+
+            <div>
+                <label for="id_password2">パスワード(確認)</label>
+                {{ form.password2 }}
+                {{ form.password2.errors }}
+            </div>
+
+            <div>
+                <label for="id_icon">アイコン画像</label>
+                {{ form.icon }}
+                {{ form.icon.errors }}
+            </div>
+
+            <button method="post">会員登録</button>
+        </form>
+
+        <p><a class="button" href="{% url 'index' %}">トップページへ</a></p>
+        </form>
+{% endblock content %}

@@ -1,22 +1,25 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import CustomUser, Message
-from allauth.account.forms import LoginForm as AllAuthLoginForm 
+from allauth.account.forms import LoginForm as AllAuthLoginForm, SignupForm
 
-class CustomUserCreationForm(UserCreationForm):
+
+class CustomUserCreationForm(SignupForm):
+    user_name = forms.CharField(max_length=30, label="ユーザーネーム")
+    icon = forms.ImageField(allow_empty_file=True, required=False)
+    
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'password1', 'password2', 'icon']
+        fields = ['user_name', 'email', 'password1', 'password2', 'icon']
+        
+    def signup(self, request, user):
+        user.username = self.cleaned_data["user_name"]
+        user.icon= self.cleaned_data["icon"]
+        user.save()
+        return user
         
 class CustomLoginForm(AllAuthLoginForm):
-    username = forms.CharField(max_length=150, required=True, label='ユーザーネーム')
-    email = forms.EmailField(required=True, label='メールアドレス')
     password = forms.CharField(widget=forms.PasswordInput, label='パスワード')
-
-class LoginForm(AuthenticationForm):
-    class Meta:
-        model = CustomUser
-        fields = ["username", "password"]
 
 class MessageForm(forms.ModelForm):
     class Meta:

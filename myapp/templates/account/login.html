@@ -11,45 +11,33 @@
 </head>
 
 {% block content %}
+{% if form.errors  %}
+<div class="login-error-message">
+    <span>ユーザーID, パスワードが一致しません．</span>
+</div>
+{% endif %}
 <!-- ヘッダー -->
-    <h1>{% trans "Sign In" %}</h1>
+    <h1>ログイン</h1>
         <p>
         まだアカウントを作成していない方は<a href="{{ signup_url }}">こちら</a> をクリックしてアカウントを作成してください。
         </p>
-        <!-- <form method="post" action="{% url 'account_login' %}">
+        <form method="post" action="{% url 'account_login' %}">
             {% csrf_token %}
             {{ form.non_field_errors }}
             <div>
-                <label for="id_username">{% trans "Username" %}</label>
-                {{ form.username }}
-                {{ form.username.errors }}
+                <label for="id_login">メールアドレス</label>
+                {{ form.login }}
+                {{ form.login.errors }}
             </div>
+
             <div>
-                <label for="id_email">{% trans "Email" %}</label>
-                {{ form.email }}
-                {{ form.email.errors }}
-            </div>
-            <div>
-                <label for="id_password">{% trans "Password" %}</label>
+                <label for="id_password">パスワード</label>
                 {{ form.password }}
                 {{ form.password.errors }}
             </div>
-            {{ redirect_field }}
-            <button type="submit" method="post">{% trans "Sign In" %}</button>
-            <form method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button class="button">ログイン</button>
-            </form>
-        </form> -->
-        
-        {% comment %} <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }} {% endcomment %}
+            <button method="post">ログイン</button>
+        </form>
 
-        {% block active_login %}active{%endblock%}
-        <button type="submit">ログイン</button>
-        <p><a class="button" href="{% url 'account_reset_password' %}">パスワードをお忘れですか？</a></p>
         <p><a class="button" href="{% url 'index' %}">トップページへ</a></p>
         </form>
 {% endblock content %}

@@ -64,8 +64,8 @@ ACCOUNT_USERNAME_REQUIRED = False    # ユーザー名は使用しない
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_EMAIL_REQUIRED = True
 
-LOGIN_REDIRECT_URL = 'chatapp:index'
-ACCOUNT_LOGOUT_REDIRECT_URL = 'login'
+# LOGIN_REDIRECT_URL = 'index'
+# ACCOUNT_LOGOUT_REDIRECT_URL = 'logout'
 
 # 「ログアウト」を一回クリックしただけでログアウトできるように設定
 ACCOUNT_LOGOUT_ON_GET = True
@@ -128,6 +128,16 @@ DATABASES = {
     }
 }
 
+# DATABASES = {
+#     'default': {
+#         "ENGINE": "django.db.backends.postgresql_psycopg2",
+#         "NAME": "vdata", #ご自身が作成したデータベース名
+#         "USER": "vuser", #ご自身が設定したユーザー名
+#         "PASSWORD": "redoden0510", #ご自身が設定したパスワード
+#         "HOST": "localhost",
+#         "PORT": "5432",
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -209,4 +219,5 @@ if os.path.isfile('.env'): # .envファイルが存在しない時にもエラ�
 # settings.py
 ACCOUNT_FORMS = {
     'login': 'myapp.forms.CustomLoginForm',
+    'signup': 'myapp.forms.CustomUserCreationForm',
 }
