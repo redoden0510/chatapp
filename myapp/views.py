@@ -12,7 +12,7 @@ from django.views.generic.edit import FormView
 from django.views.generic.edit import UpdateView
 from django.db.models import Q
 from django.core.paginator import Paginator
-from allauth.account.views import LoginView
+
 
 
 def index(request):
