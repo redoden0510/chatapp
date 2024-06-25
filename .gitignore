@@ -281,3 +281,6 @@ $RECYCLE.BIN/
 
 # 静的ファイル
 staticfiles/
+
+#デプロイ用
+.ssh
