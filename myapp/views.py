@@ -18,6 +18,7 @@ from allauth.account.views import LoginView
 def index(request):
     return render(request, "myapp/index.html")
 
+
 class Friend(LoginRequiredMixin, ListView):
     template_name = 'myapp/friends.html'
     context_object_name = 'users'
@@ -28,37 +29,52 @@ class Friend(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         friends = CustomUser.objects.exclude(id=self.request.user.id)
         query = self.request.GET.get('query', '')
-        
+
         if query:
-            friends = friends.filter(username__icontains=query)
-        
+            friends = friends.filter(
+                Q(username__icontains=query) |
+                Q(email__icontains=query))
+
+        friend_ids = friends.values_list('id', flat=True)
+
+        # 友達とユーザー間の最新メッセージを取得
+        latest_messages = Message.objects.filter(
+            Q(sender__in=friend_ids, recipient=self.request.user) |
+            Q(sender=self.request.user, recipient__in=friend_ids)
+        ).select_related('sender', 'recipient').order_by('sender', 'recipient', '-timestamp').distinct('sender', 'recipient')
+
+        latest_messages_dict = {}
+        for message in latest_messages:
+            if message.sender_id == self.request.user.id:
+                latest_messages_dict[message.recipient_id] = message
+            else:
+                latest_messages_dict[message.sender_id] = message
+
         latest_chats = []
         no_chat_friends = []
+
         for friend in friends:
-            latest_chat = Message.objects.filter(
-                Q(sender=self.request.user, recipient=friend) | 
-                Q(sender=friend, recipient=self.request.user)
-            ).order_by('-timestamp').first()
+            latest_chat = latest_messages_dict.get(friend.id, None)
             if latest_chat:
                 latest_chats.append((friend, latest_chat))
             else:
                 no_chat_friends.append(friend)
-        
+
         # 最新メッセージの送信日時でソート（降順）
         latest_chats.sort(key=lambda x: x[1].timestamp if x[1] else None, reverse=True)
-        
+
         for friend in no_chat_friends:
             latest_chats.append((friend, None))
-        
+
         paginator = Paginator(latest_chats, self.paginate_by)
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)
-        
+
         context['latest_chats'] = page_obj.object_list
         context['is_paginated'] = page_obj.has_other_pages()
         context['page_obj'] = page_obj
         context['query'] = query
-        
+
         if not latest_chats:
             context['no_friends_message'] = "該当するフレンドが存在しません"
 

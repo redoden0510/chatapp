@@ -16,4 +16,3 @@ urlpatterns = [
     path('password_change/<int:pk>', views.c_pw.as_view(), name='c_pw'),
     path('logout', views.logout.as_view(), name='logout'),
 ] 
-

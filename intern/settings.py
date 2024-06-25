@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'allauth',                 
     'allauth.account',         
     'allauth.socialaccount', 
+    
+    'debug_toolbar',   
 ]
 
 # django.contrib.sites用のサイト識別IDを設定
@@ -90,6 +92,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    
+    'debug_toolbar.middleware.DebugToolbarMiddleware',  
 ]
 
 ROOT_URLCONF = 'intern.urls'
@@ -117,27 +121,27 @@ WSGI_APPLICATION = 'intern.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'mydata',
-        'USER': 'redoden0510',
-        'PASSWORD': 'redoden0510',
-        'HOST': 'database-1.cxagaao49eai.ap-northeast-1.rds.amazonaws.com',
-        'PORT': '5432',
-    }
-}
-
 # DATABASES = {
 #     'default': {
-#         "ENGINE": "django.db.backends.postgresql_psycopg2",
-#         "NAME": "vdata", #ご自身が作成したデータベース名
-#         "USER": "vuser", #ご自身が設定したユーザー名
-#         "PASSWORD": "redoden0510", #ご自身が設定したパスワード
-#         "HOST": "localhost",
-#         "PORT": "5432",
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'mydata',
+#         'USER': 'redoden0510',
+#         'PASSWORD': 'redoden0510',
+#         'HOST': 'database-1.cxagaao49eai.ap-northeast-1.rds.amazonaws.com',
+#         'PORT': '5432',
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "vdata", #ご自身が作成したデータベース名
+        "USER": "vuser", #ご自身が設定したユーザー名
+        "PASSWORD": "redoden0510", #ご自身が設定したパスワード
+        "HOST": "localhost",
+        "PORT": "5432",
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -221,3 +225,7 @@ ACCOUNT_FORMS = {
     'login': 'myapp.forms.CustomLoginForm',
     'signup': 'myapp.forms.CustomUserCreationForm',
 }
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
