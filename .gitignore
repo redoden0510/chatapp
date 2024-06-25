@@ -283,4 +283,4 @@ $RECYCLE.BIN/
 staticfiles/
 
 #デプロイ用
-.ssh
+.ssh/
